@@ -1,10 +1,28 @@
 import { useState } from "react";
-import { Text, TouchableOpacity, View, Image } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  Image,
+  Platform,
+  Button,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { styles } from "../styles/styles";
 
 export default function HomeScreen({ navigation }) {
   const [selectedImage, setSelectedImage] = useState(null);
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+
+  // Function to handle date change
+  const onChange = (event, selectedDate) => {
+    if (selectedDate) {
+      setDate(selectedDate);
+    }
+    setShow(false); // Hide picker after selecting date
+  };
 
   const pickImage = async () => {
     try {
@@ -26,6 +44,36 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          position: "absolute",
+          top: 0,
+          padding: 20,
+        }}
+      >
+        <Text style={{ fontSize: 18 }}>
+          Today's Date: {date.toDateString()}
+        </Text>
+
+        <TouchableOpacity style={styles.button} onPress={() => setShow(true)}>
+          <Text style={{ textDecorationLine: "underline", color: "#2196F3" }}>
+            Change Date
+          </Text>
+        </TouchableOpacity>
+
+        {show && (
+          <DateTimePicker
+            value={date}
+            mode="date" // "date" | "time" | "datetime"
+            display={Platform.OS === "ios" ? "spinner" : "calendar"}
+            onChange={onChange}
+          />
+        )}
+      </View>
+
       <Text style={styles.title}>Welcome to Camera App</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity
